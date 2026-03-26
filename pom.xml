@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.mybatis</groupId>
+    <artifactId>mybatis-parent</artifactId>
+    <version>51</version>
+    <relativePath />
+  </parent>
+
+  <groupId>org.mybatis</groupId>
+  <artifactId>jpetstore</artifactId>
+  <version>6.1.1-SNAPSHOT</version>
+  <packaging>war</packaging>
+
+  <name>JPetStore Demo 6</name>
+  <url>https://www.mybatis.org/jpetstore-6/</url>
+
+  <scm>
+    <connection>scm:git:ssh://git@github.com/mybatis/jpetstore-6.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/mybatis/jpetstore-6.git</developerConnection>
+    <tag>HEAD</tag>
+    <url>https://github.com/mybatis/jpetstore-6/</url>
+  </scm>
+
+  <issueManagement>
+    <system>GitHub Issue Management</system>
+    <url>https://github.com/mybatis/jpetstore-6/issues</url>
+  </issueManagement>
+
+  <ciManagement>
+    <system>GitHub Actions</system>
+    <url>https://github.com/mybatis/jpetstore-6/actions</url>
+  </ciManagement>
+
+  <distributionManagement>
+    <site>
+      <id>gh-pages-scm</id>
+      <name>Mybatis GitHub Pages</name>
+      <url>scm:git:ssh://git@github.com/mybatis/jpetstore-6.git</url>
+    </site>
+  </distributionManagement>
+
+  <properties>
+    <java.version>17</java.version>
+    <java.release.version>17</java.release.version>
+
+    <git.commit.id.skip>true</git.commit.id.skip>
+
+    <cargo.maven.containerId>tomcat${tomcat.major-version}x</cargo.maven.containerId>
+    <cargo.maven.containerUrl>https://archive.apache.org/dist/tomcat/tomcat-${tomcat.major-version}/v${tomcat.version}/bin/apache-tomcat-${tomcat.version}.zip</cargo.maven.containerUrl>
+    <tomcat.major-version />
+    <tomcat.version />
+
+    <clirr.comparisonVersion>6.0.2</clirr.comparisonVersion>
+    <slf4j.version>2.0.17</slf4j.version>
+    <!-- 使用 Spring 5（javax 体系），适配 Tomcat 9 -->
+    <spring.version>5.3.18</spring.version>
+    <!-- 使用 mybatis-spring 2.x（对应 Spring 5） -->
+    <mybatis-spring.version>2.1.1</mybatis-spring.version>
+    <!-- 使用 javax servlet / jsp API，适配 Tomcat 9 -->
+    <servlet-api.version>4.0.1</servlet-api.version>
+    <jsp-api.version>2.3.3</jsp-api.version>
+    <taglibs.version>1.2.5</taglibs.version>
+    <assertj.version>3.27.6</assertj.version>
+    <byte-buddy.version>1.18.3</byte-buddy.version>
+    <mockito.version>5.21.0</mockito.version>
+    <hsqldb.version>2.7.4</hsqldb.version>
+    <module.name>org.mybatis.jpetstore</module.name>
+
+    <project.build.outputTimestamp>1670877034</project.build.outputTimestamp>
+    <argLine>-javaagent:${settings.localRepository}/net/bytebuddy/byte-buddy-agent/${byte-buddy.version}/byte-buddy-agent-${byte-buddy.version}.jar</argLine>
+    <license.skip>true</license.skip>
+    <cargo.servlet.port>8081</cargo.servlet.port>
+  </properties>
+
+  <dependencies>
+    <!-- 验证码生成 -->
+    <dependency>
+      <groupId>com.github.penggle</groupId>
+      <artifactId>kaptcha</artifactId>
+      <version>2.3.2</version>
+    </dependency>
+
+    <!-- MyBatis 核心 -->
+    <dependency>
+      <groupId>org.mybatis</groupId>
+      <artifactId>mybatis</artifactId>
+      <version>3.5.19</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mybatis</groupId>
+      <artifactId>mybatis-spring</artifactId>
+      <version>${mybatis-spring.version}</version>
+    </dependency>
+
+    <!-- Spring 核心 -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.thymeleaf</groupId>
+      <artifactId>thymeleaf-spring5</artifactId>
+      <version>3.1.2.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.19.2</version>
+    </dependency>
+
+    <!-- JSP & Taglib -->
+    <dependency>
+      <groupId>org.apache.taglibs</groupId>
+      <artifactId>taglibs-standard-spec</artifactId>
+      <version>${taglibs.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.taglibs</groupId>
+      <artifactId>taglibs-standard-impl</artifactId>
+      <version>${taglibs.version}</version>
+    </dependency>
+
+    <!-- Servlet/JSP（javax 体系，交给容器提供） -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>${servlet-api.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- 注意：JSP API 的 groupId 是 javax.servlet.jsp -->
+    <dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>javax.servlet.jsp-api</artifactId>
+      <version>${jsp-api.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- 日志 -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+
+    <!-- 数据库 -->
+    <dependency>
+      <groupId>org.hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>${hsqldb.version}</version>
+    </dependency>
+
+    <!-- 测试依赖 -->
+    <dependency>
+      <groupId>net.bytebuddy</groupId>
+      <artifactId>byte-buddy</artifactId>
+      <version>${byte-buddy.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.bytebuddy</groupId>
+      <artifactId>byte-buddy-agent</artifactId>
+      <version>${byte-buddy.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>5.10.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>${assertj.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.codeborne</groupId>
+      <artifactId>selenide</artifactId>
+      <version>7.5.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>htmlunit3-driver</artifactId>
+      <version>4.23.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <version>${spring.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>jpetstore</finalName>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-war-plugin</artifactId>
+          <version>3.4.0</version>
+          <configuration>
+            <archive>
+              <manifestEntries>
+                <Dependencies>jdk.unsupported</Dependencies>
+              </manifestEntries>
+            </archive>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>3.2.5</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <configuration>
+            <locales>default,es,ja,ko</locales>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <configuration>
+            <overwrite>true</overwrite>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.cargo</groupId>
+          <artifactId>cargo-maven3-plugin</artifactId>
+          <version>1.10.13</version>
+          <configuration>
+            <container>
+              <containerId>${cargo.maven.containerId}</containerId>
+              <zipUrlInstaller>
+                <url>${cargo.maven.containerUrl}</url>
+              </zipUrlInstaller>
+            </container>
+            <configuration>
+              <properties>
+                <cargo.servlet.port>${cargo.servlet.port}</cargo.servlet.port>
+              </properties>
+            </configuration>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.13.0</version>
+          <configuration>
+            <source>${java.version}</source>
+            <target>${java.version}</target>
+            <encoding>UTF-8</encoding>
+          </configuration>
+        </plugin>
+        <!-- 新增：永久跳过 GPG 签名插件，解决 gpg version 报错 -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <version>3.2.8</version>
+          <configuration>
+            <skip>true</skip>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <groupId>io.github.git-commit-id</groupId>
+        <artifactId>git-commit-id-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>git-commit-id</id>
+            <configuration>
+              <skip>true</skip>
+              <failOnNoGitDirectory>false</failOnNoGitDirectory>
+              <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <skip>true</skip>
+          <failOnNoGitDirectory>false</failOnNoGitDirectory>
+          <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <!-- 修正：将原重复的 tomcat9 ID 改为 tomcat10，解决 ID 重复问题，同时修正版本配置 -->
+    <!-- Tomcat10 -->
+    <profile>
+      <id>tomcat10</id>
+      <properties>
+        <tomcat.major-version>10</tomcat.major-version>
+        <tomcat.version>10.1.20</tomcat.version>
+      </properties>
+    </profile>
+
+    <!-- Tomcat9备用（ID 唯一，保留原有配置） -->
+    <profile>
+      <id>tomcat9</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <tomcat.major-version>9</tomcat.major-version>
+        <tomcat.version>9.0.85</tomcat.version>
+      </properties>
+    </profile>
+  </profiles>
+</project>
